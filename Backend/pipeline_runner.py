@@ -14,6 +14,7 @@ from agents.git_expert import git_expert
 from agents.retrieval_agent import retrieval_agent
 from agents.reviewer_v1 import reviewer_v1
 from agents.reviewer_v2 import reviewer_v2
+from agents.github_crawler_node import github_crawler_node
 from frontend_payload import build_frontend_payload
 
 
@@ -23,6 +24,7 @@ EmitFn = Callable[[str, Dict[str, Any]], None]
 def _initial_state(inputs: Dict[str, Any]) -> Dict[str, Any]:
     state = {
         "git_diff": inputs.get("git_diff", ""),
+        "github_repo": inputs.get("github_repo", ""),
         "metadata": deepcopy(inputs.get("metadata", {})),
         "hindsight_session_id": inputs.get("hindsight_session_id", ""),
         "risk_flag": inputs.get("risk_flag", False),
@@ -51,6 +53,11 @@ def execute_pipeline(inputs: Dict[str, Any], emit: Optional[EmitFn] = None) -> D
     # Suppress noisy console logs for the SSE path; progress is emitted as SSE.
     sink = io.StringIO()
     with redirect_stdout(sink), redirect_stderr(sink):
+        _emit(emit, "stage_started", {"stage": "github_crawler"})
+        crawler_out = github_crawler_node(state)
+        state.update(crawler_out)
+        _emit(emit, "stage_completed", {"stage": "github_crawler", "output": {"github_repo": state.get("github_repo"), "has_diff": bool(state.get("git_diff"))}})
+
         _emit(emit, "stage_started", {"stage": "context_agent"})
         state.update(context_agent(state))
         _emit(emit, "stage_completed", {"stage": "context_agent", "state": {"hindsight_session_id": state.get("hindsight_session_id"), "metadata": state.get("metadata", {})}})

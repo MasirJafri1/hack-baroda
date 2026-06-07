@@ -55,6 +55,8 @@ def build_frontend_payload(
                 "git_meta": classifications.get("git_meta", []),
                 "app_code": classifications.get("app_code", []),
             },
+            "github_repo": metadata.get("github_repo") or state.get("github_repo", ""),
+            "github_data": metadata.get("github_data", {}),
         },
         "triage_layer": {
             "risk_flagged": risk_flag,

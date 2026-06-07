@@ -1,5 +1,6 @@
 from langgraph.graph import StateGraph, START, END
 from state import SharedGraphState
+from agents.github_crawler_node import github_crawler_node
 from agents.context_agent import context_agent
 from agents.reviewer_v1 import reviewer_v1
 from agents.reviewer_v2 import reviewer_v2
@@ -19,6 +20,7 @@ def increment_loop(state: SharedGraphState):
 workflow = StateGraph(SharedGraphState)
 
 # Register Nodes
+workflow.add_node("github_crawler", github_crawler_node)
 workflow.add_node("context_agent", context_agent)
 workflow.add_node("reviewer_v1", reviewer_v1)
 workflow.add_node("reviewer_v2", reviewer_v2)
@@ -30,8 +32,10 @@ workflow.add_node("big_boss", big_boss)
 workflow.add_node("increment_loop", increment_loop)
 
 # Register Static Edges
-workflow.add_edge(START, "context_agent")
+workflow.add_edge(START, "github_crawler")
+workflow.add_edge("github_crawler", "context_agent")
 workflow.add_edge("context_agent", "reviewer_v1")
+
 workflow.add_edge("reviewer_v2", "retrieval_agent")
 
 # Parallel Fan-Out

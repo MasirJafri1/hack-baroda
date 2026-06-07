@@ -1,31 +1,123 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html class="light" lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hindsight Pipeline Frontend</title>
-    <meta
-      name="description"
-      content="Frontend for the Hindsight-powered DevOps pipeline with live SSE updates."
-    />
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>DevOps Guardrail AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #fcf8fa;
+        color: #1b1b1d;
+      }
+      .code-font {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+    </style>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+              "primary-fixed-dim": "#bec6e0",
+              "on-tertiary": "#ffffff",
+              "on-primary-container": "#7c839b",
+              "on-primary-fixed": "#131b2e",
+              "secondary-fixed-dim": "#b4c5ff",
+              "secondary": "#0051d5",
+              "on-background": "#1b1b1d",
+              "tertiary-container": "#271901",
+              "surface-tint": "#565e74",
+              "on-error": "#ffffff",
+              "on-tertiary-fixed": "#271901",
+              "tertiary-fixed-dim": "#dec29a",
+              "error-container": "#ffdad6",
+              "surface-container": "#f0edef",
+              "surface-container-low": "#f6f3f5",
+              "surface-container-lowest": "#ffffff",
+              "on-primary": "#ffffff",
+              "on-secondary": "#ffffff",
+              "surface-variant": "#e4e2e4",
+              "on-secondary-fixed": "#00174b",
+              "primary-fixed": "#dae2fd",
+              "tertiary-fixed": "#fcdeb5",
+              "on-secondary-container": "#fefcff",
+              "surface-container-high": "#eae7e9",
+              "primary-container": "#131b2e",
+              "on-primary-fixed-variant": "#3f465c",
+              "outline-variant": "#c6c6cd",
+              "inverse-surface": "#303032",
+              "on-error-container": "#93000a",
+              "on-secondary-fixed-variant": "#003ea8",
+              "background": "#fcf8fa",
+              "error": "#ba1a1a",
+              "on-surface": "#1b1b1d",
+              "inverse-on-surface": "#f3f0f2",
+              "tertiary": "#000000",
+              "secondary-fixed": "#dbe1ff",
+              "on-tertiary-fixed-variant": "#574425",
+              "surface": "#fcf8fa",
+              "primary": "#000000",
+              "secondary-container": "#316bf3",
+              "surface-dim": "#dcd9db",
+              "surface-container-highest": "#e4e2e4",
+              "surface-bright": "#fcf8fa",
+              "on-surface-variant": "#45464d",
+              "on-tertiary-container": "#98805d",
+              "inverse-primary": "#bec6e0",
+              "outline": "#76777d"
+            },
+            "borderRadius": {
+              "DEFAULT": "0.125rem",
+              "lg": "0.25rem",
+              "xl": "0.5rem",
+              "full": "0.75rem"
+            },
+            "spacing": {
+              "xl": "40px",
+              "margin": "24px",
+              "gutter": "16px",
+              "md": "16px",
+              "base": "4px",
+              "sm": "8px",
+              "xs": "4px",
+              "lg": "24px"
+            },
+            "fontFamily": {
+              "headline-sm": ["Inter"],
+              "body-sm": ["Inter"],
+              "body-md": ["Inter"],
+              "body-lg": ["Inter"],
+              "headline-md": ["Inter"],
+              "code-md": ["JetBrains Mono"],
+              "label-caps": ["Inter"],
+              "headline-lg": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
   </head>
-  <body>
-    <div id="root"></div>
+  <body class="flex flex-col h-screen overflow-hidden">
+    <div id="root" class="flex flex-col h-screen overflow-hidden"></div>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
- </html><!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hindsight DevOps Review</title>
-    <meta
-      name="description"
-      content="Frontend dashboard for streaming DevOps risk reviews with SSE"
-    />
-    <script type="module" src="/src/main.tsx"></script>
-  </head>
-  <body>
-    <div id="root"></div>
   </body>
 </html>

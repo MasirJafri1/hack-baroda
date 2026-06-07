@@ -9,6 +9,7 @@ def merge_analyses(left: Dict[str, str], right: Dict[str, str]) -> Dict[str, str
 
 class SharedGraphState(TypedDict):
     git_diff: str
+    github_repo: str
     metadata: Dict[str, Any]
     hindsight_session_id: str
     risk_flag: bool
@@ -21,3 +22,4 @@ class SharedGraphState(TypedDict):
     loop_count: int
     final_audit: str
     frontend_payload: Dict[str, Any]
+
