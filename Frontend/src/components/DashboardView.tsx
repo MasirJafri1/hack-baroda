@@ -107,12 +107,12 @@ export default function DashboardView({
 
       {/* Panel 1: The Trigger */}
       <section className="lg:col-span-4 border-r border-outline-variant flex flex-col bg-surface-container-lowest overflow-hidden">
-        <div className="p-md border-b border-outline-variant flex justify-between items-center">
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-secondary">history</span>
-            <h2 className="font-headline-sm text-headline-sm font-semibold text-primary">The Trigger</h2>
+        <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-white">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-zinc-500 text-[18px]">history</span>
+            <h2 className="text-sm font-bold tracking-tight text-zinc-800">The Trigger</h2>
           </div>
-          <span className="label-caps font-label-caps px-sm py-0.5 bg-surface-container-high rounded text-on-surface-variant">
+          <span className="text-[10px] font-bold tracking-wider px-2.5 py-0.5 rounded bg-zinc-100 text-zinc-650 border border-zinc-200/50 uppercase">
             {inputType === 'github' ? 'GITHUB REPO' : 'LOCAL DIFF'}
           </span>
         </div>
@@ -250,22 +250,29 @@ export default function DashboardView({
               </div>
             </div>
           )}
-
+          <div className="h-8" />
         </div>
       </section>
 
       {/* Panel 2: The Brain */}
       <section className="lg:col-span-4 border-r border-outline-variant flex flex-col bg-surface overflow-hidden">
-        <div className="p-md border-b border-outline-variant flex justify-between items-center bg-white">
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined text-tertiary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
-            <h2 className="font-headline-sm text-headline-sm font-semibold text-primary">The Brain</h2>
+        <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-white">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-zinc-500 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+            <h2 className="text-sm font-bold tracking-tight text-zinc-800">The Brain</h2>
           </div>
           {state.finalPayload && (
-            <div className={`flex items-center gap-xs px-sm py-0.5 rounded-full ${verdict === 'BLOCKED' ? 'bg-error-container text-on-error-container' : verdict === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'
-              }`}>
-              <span className="material-symbols-outlined text-[14px]">{verdict === 'BLOCKED' ? 'warning' : verdict === 'APPROVED' ? 'check_circle' : 'help_outline'}</span>
-              <span className="font-label-caps text-label-caps uppercase">{verdict || 'PENDING'}</span>
+            <div className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider border uppercase ${
+              verdict === 'BLOCKED'
+                ? 'bg-red-50 text-red-700 border-red-200/50'
+                : verdict === 'APPROVED'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200/50'
+                  : 'bg-amber-50 text-amber-800 border-amber-200/50'
+            }`}>
+              <span className="material-symbols-outlined text-[12px] flex items-center justify-center">
+                {verdict === 'BLOCKED' ? 'cancel' : verdict === 'APPROVED' ? 'verified' : 'help'}
+              </span>
+              <span>{verdict || 'PENDING'}</span>
             </div>
           )}
         </div>
@@ -377,21 +384,20 @@ export default function DashboardView({
               </p>
             )}
           </div>
-
+          <div className="h-8" />
         </div>
       </section>
 
       {/* Panel 3: Executive Verdict */}
       <section className="lg:col-span-4 flex flex-col bg-surface-container-lowest overflow-hidden">
-        <div className={`p-md border-b border-outline-variant ${isBlocked ? 'bg-error-container text-on-error-container' : isApproved ? 'bg-green-100 text-green-800' : isReview ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-container-low'
-          }`}>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-sm">
-              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-                {isBlocked ? 'block' : isApproved ? 'check_circle' : 'security'}
-              </span>
-              <h2 className="font-headline-sm text-headline-sm font-bold">Executive Verdict</h2>
-            </div>
+        <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-white">
+          <div className="flex items-center gap-2">
+            <span className={`material-symbols-outlined text-[18px] flex items-center justify-center ${
+              isBlocked ? 'text-error' : isApproved ? 'text-emerald-600' : isReview ? 'text-amber-500' : 'text-zinc-500'
+            }`} style={{ fontVariationSettings: "'FILL' 1" }}>
+              {isBlocked ? 'block' : isApproved ? 'check_circle' : 'security'}
+            </span>
+            <h2 className="text-sm font-bold tracking-tight text-zinc-800">Executive Verdict</h2>
           </div>
           <div className="mt-2 w-full">
             <div className="h-1.5 w-full rounded-full bg-zinc-100 overflow-hidden">
@@ -506,7 +512,7 @@ export default function DashboardView({
                   Ignore &amp; Bypass
                 </button>
               </div>
-
+              <div className="h-8" />
             </div>
           )}
         </div>

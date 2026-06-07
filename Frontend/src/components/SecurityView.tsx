@@ -270,8 +270,8 @@ export default function SecurityView({ state }: SecurityViewProps) {
       {/* Header */}
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-primary font-bold">Security Analysis</h2>
-          <p className="text-on-surface-variant font-body-md mt-1 text-sm">
+          <h2 className="text-lg font-bold tracking-tight text-primary">Security Analysis</h2>
+          <p className="text-xs text-on-surface-variant/80 mt-1">
             Live threat detection powered by Hindsight AI — driven entirely by real pipeline output.
           </p>
         </div>

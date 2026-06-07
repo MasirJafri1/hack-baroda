@@ -79,11 +79,11 @@ export default function LogsView({
   return (
     <div className="h-full flex flex-col bg-surface-container-lowest overflow-hidden">
       {/* Header */}
-      <div className="p-md border-b border-outline-variant flex justify-between items-center bg-white">
-        <div className="flex items-center gap-sm">
-          <span className="material-symbols-outlined text-secondary">terminal</span>
-          <h2 className="font-headline-sm text-headline-sm font-bold text-primary">Audit Logs</h2>
-        </div>
+        <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-white">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-zinc-500 text-[18px]">terminal</span>
+            <h2 className="text-sm font-bold tracking-tight text-zinc-800">Audit Logs</h2>
+          </div>
         <div className="flex items-center gap-2">
           {/* Panel tabs */}
           <div className="flex bg-surface-container-low rounded-lg p-0.5 gap-0.5">
@@ -158,6 +158,7 @@ export default function LogsView({
             ))
           )}
           <div ref={timelineEndRef as any} />
+          <div className="h-6" />
         </div>
       )}
 
@@ -239,6 +240,7 @@ export default function LogsView({
                 </div>
               ))
             )}
+            <div className="h-6" />
           </div>
         </div>
       )}
