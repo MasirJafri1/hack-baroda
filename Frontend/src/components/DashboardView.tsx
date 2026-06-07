@@ -6,13 +6,14 @@ const MarkdownRenderer = ({ content }: { content: string }) => {
   return (
     <ReactMarkdown
       components={{
-        code({ node, inline, className, children, ...props }) {
-          return inline ? (
+        code({ node, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '');
+          return !match ? (
             <code className="bg-slate-100 dark:bg-slate-800 text-red-600 px-1 py-0.5 rounded font-mono text-[10px]" {...props}>
               {children}
             </code>
           ) : (
-            <pre className="bg-[#0F172A] text-white p-2.5 rounded font-mono text-[10px] overflow-x-auto my-2 leading-normal">
+            <pre className="bg-[#1e1e20] text-white p-2.5 rounded font-mono text-[10px] overflow-x-auto my-2 leading-normal">
               <code className={className} {...props}>
                 {children}
               </code>
@@ -220,7 +221,7 @@ export default function DashboardView({
                     {state.finalPayload.pipeline_metadata.changed_files[0] || 'Unknown File'}
                   </span>
                 </div>
-                <pre className="font-code-md text-[11px] p-2 overflow-x-auto max-h-48 bg-[#0F172A] text-white">
+                <pre className="font-code-md text-[11px] p-2 overflow-x-auto max-h-48 bg-[#1e1e20] text-white">
                   {gitDiff}
                 </pre>
               </div>
@@ -447,7 +448,7 @@ export default function DashboardView({
                         content_copy
                       </button>
                     </div>
-                    <pre className="font-code-md text-[11px] p-3 bg-[#0F172A] text-white overflow-x-auto max-h-48 leading-relaxed">
+                    <pre className="font-code-md text-[11px] p-3 bg-[#1e1e20] text-white overflow-x-auto max-h-48 leading-relaxed">
                       {state.finalPayload.final_audit_report.example_patch_code}
                     </pre>
                   </div>

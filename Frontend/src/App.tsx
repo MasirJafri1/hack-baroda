@@ -187,10 +187,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-background text-on-background">
-      <Header
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-      />
+      <Header />
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />

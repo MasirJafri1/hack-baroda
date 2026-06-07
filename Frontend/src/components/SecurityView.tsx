@@ -1,6 +1,46 @@
 import ReactMarkdown from 'react-markdown';
 import { PipelineRunState } from '../types';
 
+const MarkdownRenderer = ({ content }: { content: string }) => {
+  return (
+    <ReactMarkdown
+      components={{
+        code({ node, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '');
+          return !match ? (
+            <code className="bg-slate-100 dark:bg-slate-800 text-red-600 px-1 py-0.5 rounded font-mono text-[10px]" {...props}>
+              {children}
+            </code>
+          ) : (
+            <pre className="bg-[#1e1e20] text-white p-2.5 rounded font-mono text-[10px] overflow-x-auto my-2 leading-normal">
+              <code className={className} {...props}>
+                {children}
+              </code>
+            </pre>
+          );
+        },
+        p({ children }) {
+          return <p className="mb-2 last:mb-0 leading-normal">{children}</p>;
+        },
+        ul({ children }) {
+          return <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>;
+        },
+        ol({ children }) {
+          return <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>;
+        },
+        li({ children }) {
+          return <li className="leading-tight">{children}</li>;
+        },
+        h1({ children }) { return <h1 className="text-xs font-bold mt-2 mb-1 text-primary">{children}</h1>; },
+        h2({ children }) { return <h2 className="text-xs font-bold mt-1.5 mb-1 text-primary">{children}</h2>; },
+        h3({ children }) { return <h3 className="text-[11px] font-bold mt-1.5 mb-1 text-primary">{children}</h3>; },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
+
 interface SecurityViewProps {
   state: PipelineRunState;
   onRunDeepScan: () => void;
@@ -205,8 +245,8 @@ export default function SecurityView({ state }: SecurityViewProps) {
           <span className="material-symbols-outlined text-sm">{icon}</span>
           <h4 className="text-xs font-bold uppercase tracking-wide">{title}</h4>
         </div>
-        <div className="p-md text-xs text-on-surface leading-relaxed prose max-w-none">
-          <ReactMarkdown>{content}</ReactMarkdown>
+        <div className="p-md text-xs text-on-surface leading-normal markdown-card">
+          <MarkdownRenderer content={content} />
         </div>
       </div>
     );
