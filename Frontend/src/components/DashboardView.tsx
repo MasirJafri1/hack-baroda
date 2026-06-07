@@ -2,6 +2,45 @@ import ReactMarkdown from 'react-markdown';
 import { PipelineRunState } from '../types';
 import { stageLabels, stages } from '../constants';
 
+const MarkdownRenderer = ({ content }: { content: string }) => {
+  return (
+    <ReactMarkdown
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          return inline ? (
+            <code className="bg-slate-100 dark:bg-slate-800 text-red-600 px-1 py-0.5 rounded font-mono text-[10px]" {...props}>
+              {children}
+            </code>
+          ) : (
+            <pre className="bg-[#0F172A] text-white p-2.5 rounded font-mono text-[10px] overflow-x-auto my-2 leading-normal">
+              <code className={className} {...props}>
+                {children}
+              </code>
+            </pre>
+          );
+        },
+        p({ children }) {
+          return <p className="mb-2 last:mb-0 leading-normal">{children}</p>;
+        },
+        ul({ children }) {
+          return <ul className="list-disc pl-4 mb-2 space-y-0.5">{children}</ul>;
+        },
+        ol({ children }) {
+          return <ol className="list-decimal pl-4 mb-2 space-y-0.5">{children}</ol>;
+        },
+        li({ children }) {
+          return <li className="leading-tight">{children}</li>;
+        },
+        h1({ children }) { return <h1 className="text-xs font-bold mt-2 mb-1 text-primary">{children}</h1>; },
+        h2({ children }) { return <h2 className="text-xs font-bold mt-1.5 mb-1 text-primary">{children}</h2>; },
+        h3({ children }) { return <h3 className="text-[11px] font-bold mt-1.5 mb-1 text-primary">{children}</h3>; },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
+
 interface DashboardViewProps {
   gitDiff: string;
   setGitDiff: (diff: string) => void;
@@ -41,7 +80,7 @@ export default function DashboardView({
 
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-12 gap-0">
-      
+
       {/* Panel 1: The Trigger */}
       <section className="lg:col-span-4 border-r border-outline-variant flex flex-col bg-surface-container-lowest overflow-hidden">
         <div className="p-md border-b border-outline-variant flex justify-between items-center">
@@ -53,7 +92,7 @@ export default function DashboardView({
             {inputType === 'github' ? 'GITHUB REPO' : 'LOCAL DIFF'}
           </span>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-md custom-scrollbar space-y-md">
           {/* Input Type Selector */}
           <div>
@@ -62,18 +101,16 @@ export default function DashboardView({
               <button
                 type="button"
                 onClick={() => setInputType('github')}
-                className={`text-xs py-1.5 rounded transition-all ${
-                  inputType === 'github' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
-                }`}
+                className={`text-xs py-1.5 rounded transition-all ${inputType === 'github' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
+                  }`}
               >
                 GitHub Crawler
               </button>
               <button
                 type="button"
                 onClick={() => setInputType('diff')}
-                className={`text-xs py-1.5 rounded transition-all ${
-                  inputType === 'diff' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
-                }`}
+                className={`text-xs py-1.5 rounded transition-all ${inputType === 'diff' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
+                  }`}
               >
                 Manual Git Diff
               </button>
@@ -138,7 +175,7 @@ export default function DashboardView({
             <div className="pt-4 border-t border-outline-variant space-y-3">
               <h4 className="font-semibold text-sm">GitHub Crawler Results</h4>
               <p className="text-xs text-on-surface-variant">Repository: <span className="font-semibold text-on-surface">{githubRepo}</span></p>
-              
+
               {githubData.commits && githubData.commits.length > 0 && (
                 <div>
                   <h5 className="text-[11px] font-bold text-on-surface-variant uppercase tracking-wider mb-1">Recent Commits</h5>
@@ -201,9 +238,8 @@ export default function DashboardView({
             <h2 className="font-headline-sm text-headline-sm font-semibold text-primary">The Brain</h2>
           </div>
           {state.finalPayload && (
-            <div className={`flex items-center gap-xs px-sm py-0.5 rounded-full ${
-              verdict === 'BLOCKED' ? 'bg-error-container text-on-error-container' : verdict === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'
-            }`}>
+            <div className={`flex items-center gap-xs px-sm py-0.5 rounded-full ${verdict === 'BLOCKED' ? 'bg-error-container text-on-error-container' : verdict === 'APPROVED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800'
+              }`}>
               <span className="material-symbols-outlined text-[14px]">{verdict === 'BLOCKED' ? 'warning' : verdict === 'APPROVED' ? 'check_circle' : 'help_outline'}</span>
               <span className="font-label-caps text-label-caps uppercase">{verdict || 'PENDING'}</span>
             </div>
@@ -214,30 +250,27 @@ export default function DashboardView({
           {/* Hindsight Triage Status — real data from triage_layer */}
           <div className="space-y-sm">
             <h3 className="font-label-caps text-label-caps text-on-surface-variant font-bold">HINDSIGHT TRIAGE STATUS</h3>
-            <div className={`rounded-lg border p-sm flex items-center gap-3 ${
-              !state.finalPayload
+            <div className={`rounded-lg border p-sm flex items-center gap-3 ${!state.finalPayload
                 ? 'border-outline-variant bg-surface-container-low'
                 : state.finalPayload.triage_layer.risk_flagged
                   ? 'border-error/40 bg-error-container'
                   : 'border-green-200 bg-green-50'
-            }`}>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                !state.finalPayload ? 'bg-surface-container-high text-on-surface-variant' :
-                state.finalPayload.triage_layer.risk_flagged ? 'bg-error text-white' : 'bg-green-100 text-green-700'
               }`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${!state.finalPayload ? 'bg-surface-container-high text-on-surface-variant' :
+                  state.finalPayload.triage_layer.risk_flagged ? 'bg-error text-white' : 'bg-green-100 text-green-700'
+                }`}>
                 <span className="material-symbols-outlined text-base">
                   {!state.finalPayload ? 'hourglass_empty' : state.finalPayload.triage_layer.risk_flagged ? 'warning' : 'check_circle'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className={`text-xs font-bold ${
-                  !state.finalPayload ? 'text-on-surface-variant' :
-                  state.finalPayload.triage_layer.risk_flagged ? 'text-error' : 'text-green-700'
-                }`}>
+                <p className={`text-xs font-bold ${!state.finalPayload ? 'text-on-surface-variant' :
+                    state.finalPayload.triage_layer.risk_flagged ? 'text-error' : 'text-green-700'
+                  }`}>
                   {!state.finalPayload ? 'Awaiting run...' :
-                   state.finalPayload.triage_layer.risk_flagged
-                    ? `Risk Flagged — ${state.finalPayload.triage_layer.matches_found} match(es) found`
-                    : 'Cleared — No historical risk patterns matched'}
+                    state.finalPayload.triage_layer.risk_flagged
+                      ? `Risk Flagged — ${state.finalPayload.triage_layer.matches_found} match(es) found`
+                      : 'Cleared — No historical risk patterns matched'}
                 </p>
                 {state.finalPayload?.triage_layer.reasoning && (
                   <p className="text-[11px] text-on-surface-variant truncate mt-0.5" title={state.finalPayload.triage_layer.reasoning}>
@@ -257,23 +290,21 @@ export default function DashboardView({
               return (
                 <div
                   key={stage}
-                  className={`p-sm bg-white border border-outline-variant rounded flex items-center gap-md relative overflow-hidden transition-all duration-200 ${
-                    isActive ? 'border-secondary ring-1 ring-secondary' : ''
-                  } ${!isActive && !isDone ? 'opacity-55 grayscale' : ''}`}
+                  className={`p-sm bg-white border border-outline-variant rounded flex items-center gap-md relative overflow-hidden transition-all duration-200 ${isActive ? 'border-secondary ring-1 ring-secondary' : ''
+                    } ${!isActive && !isDone ? 'opacity-55 grayscale' : ''}`}
                 >
                   {isActive && <div className="absolute inset-0 bg-secondary/5"></div>}
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center relative z-10 ${
-                    isDone ? 'bg-green-100 text-green-700' : isActive ? 'bg-secondary-container text-white' : 'bg-surface-container-high text-primary'
-                  }`}>
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center relative z-10 ${isDone ? 'bg-green-100 text-green-700' : isActive ? 'bg-secondary-container text-white' : 'bg-surface-container-high text-primary'
+                    }`}>
                     <span className="material-symbols-outlined text-md">
-                      {stage === 'github_crawler' ? 'cloud_download' : 
-                       stage === 'context_agent' ? 'art_track' :
-                       stage === 'reviewer_v1' ? 'security' :
-                       stage === 'reviewer_v2' ? 'search' :
-                       stage === 'retrieval_agent' ? 'database' :
-                       stage === 'git_expert' ? 'history' :
-                       stage === 'cloud_expert' ? 'cloud' :
-                       stage === 'code_expert' ? 'code' : 'psychology'}
+                      {stage === 'github_crawler' ? 'cloud_download' :
+                        stage === 'context_agent' ? 'art_track' :
+                          stage === 'reviewer_v1' ? 'security' :
+                            stage === 'reviewer_v2' ? 'search' :
+                              stage === 'retrieval_agent' ? 'database' :
+                                stage === 'git_expert' ? 'history' :
+                                  stage === 'cloud_expert' ? 'cloud' :
+                                    stage === 'code_expert' ? 'code' : 'psychology'}
                     </span>
                   </div>
                   <div className="flex-1 relative z-10">
@@ -295,28 +326,26 @@ export default function DashboardView({
           </div>
 
           {/* Pipeline Progress Summary */}
-          <div className={`rounded-lg border p-sm flex flex-col gap-1 ${
-            !state.finalPayload && !state.isRunning
+          <div className={`rounded-lg border p-sm flex flex-col gap-1 ${!state.finalPayload && !state.isRunning
               ? 'border-outline-variant bg-surface-container-low'
               : state.isRunning
                 ? 'border-secondary/40 bg-secondary/5'
                 : isBlocked ? 'border-error/40 bg-error-container'
-                : isApproved ? 'border-green-200 bg-green-50'
-                : 'border-yellow-200 bg-yellow-50'
-          }`}>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pipeline Status</p>
-            <p className={`text-sm font-extrabold ${
-              state.isRunning ? 'text-secondary' :
-              !state.finalPayload ? 'text-on-surface-variant' :
-              isBlocked ? 'text-error' : isApproved ? 'text-green-700' : 'text-yellow-700'
+                  : isApproved ? 'border-green-200 bg-green-50'
+                    : 'border-yellow-200 bg-yellow-50'
             }`}>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-on-surface-variant">Pipeline Status</p>
+            <p className={`text-sm font-extrabold ${state.isRunning ? 'text-secondary' :
+                !state.finalPayload ? 'text-on-surface-variant' :
+                  isBlocked ? 'text-error' : isApproved ? 'text-green-700' : 'text-yellow-700'
+              }`}>
               {state.isRunning
                 ? `Running — ${state.completedStages.length} stage(s) done`
                 : !state.finalPayload
                   ? 'Idle — No run yet'
                   : isBlocked ? 'BLOCKED'
-                  : isApproved ? 'APPROVED'
-                  : 'REQUIRES REVIEW'}
+                    : isApproved ? 'APPROVED'
+                      : 'REQUIRES REVIEW'}
             </p>
             {state.finalPayload && (
               <p className="text-[11px] text-on-surface-variant">
@@ -330,9 +359,8 @@ export default function DashboardView({
 
       {/* Panel 3: Executive Verdict */}
       <section className="lg:col-span-4 flex flex-col bg-surface-container-lowest overflow-hidden">
-        <div className={`p-md border-b border-outline-variant flex justify-between items-center ${
-          isBlocked ? 'bg-error-container text-on-error-container' : isApproved ? 'bg-green-100 text-green-800' : isReview ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-container-low'
-        }`}>
+        <div className={`p-md border-b border-outline-variant flex justify-between items-center ${isBlocked ? 'bg-error-container text-on-error-container' : isApproved ? 'bg-green-100 text-green-800' : isReview ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-container-low'
+          }`}>
           <div className="flex items-center gap-sm">
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
               {isBlocked ? 'block' : isApproved ? 'check_circle' : 'security'}
@@ -341,7 +369,7 @@ export default function DashboardView({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-md space-y-md custom-scrollbar">
+        <div className="flex-1 overflow-y-scroll p-md space-y-md custom-scrollbar">
           {!state.finalPayload ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-md">
               <div className="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-md text-on-surface-variant">
@@ -355,9 +383,8 @@ export default function DashboardView({
           ) : (
             <div className="space-y-md">
               <div className="flex flex-col items-center py-sm text-center gap-md">
-                <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center ${
-                  isBlocked ? 'border-error text-error bg-error/5' : isApproved ? 'border-green-500 text-green-500 bg-green-50' : 'border-yellow-500 text-yellow-500 bg-yellow-50'
-                }`}>
+                <div className={`w-16 h-16 rounded-full border-4 flex items-center justify-center ${isBlocked ? 'border-error text-error bg-error/5' : isApproved ? 'border-green-500 text-green-500 bg-green-50' : 'border-yellow-500 text-yellow-500 bg-yellow-50'
+                  }`}>
                   <span className="material-symbols-outlined text-3xl font-bold">
                     {isBlocked ? 'cancel' : isApproved ? 'verified' : 'help'}
                   </span>
@@ -375,8 +402,8 @@ export default function DashboardView({
               {/* Conclusion */}
               <div className="p-md bg-white border border-outline-variant rounded-lg">
                 <h3 className="font-label-caps text-label-caps text-on-surface-variant mb-sm">EXECUTIVE CONCLUSION</h3>
-                <div className="text-xs text-on-surface leading-relaxed markdown-card prose max-w-none">
-                  <ReactMarkdown>{state.finalPayload.final_audit_report.conclusion || 'No conclusion details provided.'}</ReactMarkdown>
+                <div className="text-xs text-on-surface leading-normal markdown-card">
+                  <MarkdownRenderer content={state.finalPayload.final_audit_report.conclusion || 'No conclusion details provided.'} />
                 </div>
               </div>
 
@@ -398,8 +425,8 @@ export default function DashboardView({
                   <h3 className="font-label-caps text-label-caps text-green-700 mb-sm">EXPERT MITIGATION SUGGESTIONS</h3>
                   <div className="space-y-2">
                     {state.finalPayload.final_audit_report.mitigation_patches.map((patch, idx) => (
-                      <div key={idx} className="bg-surface-container-low p-2 rounded text-xs border-l-2 border-green-500">
-                        <ReactMarkdown>{patch}</ReactMarkdown>
+                      <div key={idx} className="bg-surface-container-low p-2.5 rounded text-xs border-l-2 border-green-500">
+                        <MarkdownRenderer content={patch} />
                       </div>
                     ))}
                   </div>
