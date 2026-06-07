@@ -95,3 +95,34 @@ All agents expect and return pieces of the `SharedGraphState`. They use `agents.
 
 - Consider adding inline module docstrings to each Python file for IDE integration and auto-generated Sphinx docs.
 - Add a `docs/` folder and split per-file docs if you need richer documentation or API references.
+
+---
+
+**Hindsight Integration (Local Dev)**
+
+- A lightweight HTTP client and ingestion script have been added to enable integration with a real Hindsight service.
+
+- Files added:
+  - `Backend/hindsight_client.py` — HTTP wrapper that mirrors `HindsightDB` methods (`query_incidents`, `save_session`, `get_all_incidents`).
+  - `scripts/ingest_synthetic.py` — Script to import `Backend/database.json` into a running Hindsight instance (supports `--bulk` and `--iterative`).
+  - `docker-compose.hindsight.yml` — Minimal compose file to run `hindsightai/hindsight:latest` on `localhost:8080`.
+  - `scripts/run_hindsight.sh` — Helper script to start Hindsight using compose or docker run.
+
+- Quick start (local):
+
+```bash
+# Start Hindsight (background)
+./scripts/run_hindsight.sh
+
+# Iteratively ingest synthetic incidents
+python scripts/ingest_synthetic.py --iterative --hindsight-url http://localhost:8080 --delay 1
+
+# Or bulk import
+python scripts/ingest_synthetic.py --mode bulk --hindsight-url http://localhost:8080
+```
+
+- Enabling agents to use a live Hindsight service:
+  - Set `HINDSIGHT_URL` (e.g. `export HINDSIGHT_URL=http://localhost:8080`) and optionally `HINDSIGHT_API_KEY`.
+  - `Backend/agents/utils.get_db()` will return an HTTP-backed `HindsightHTTPClient` when `HINDSIGHT_URL` is present; otherwise it falls back to the local `HindsightDB`.
+
+---

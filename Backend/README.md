@@ -145,3 +145,18 @@ Enter scenario number [1-4]:
 ```
 
 Choose a scenario to run. The script will invoke the LangGraph pipeline, log node transitions in the console, and render the final synthesized markdown DevOps audit report.
+
+### One-shot setup and test
+
+To install requirements and immediately run the backend test harness, use:
+
+```bash
+cd Backend
+bash setup_and_test.sh
+```
+
+By default, the script creates `Backend/venv`, loads `Backend/.env` if it exists, installs `requirements.txt`, and runs scenario `4` (all scenarios). You can override the defaults with environment variables:
+
+```bash
+CREATE_VENV=0 SCENARIO=1 bash setup_and_test.sh
+```
