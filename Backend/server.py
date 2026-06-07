@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import os
 import queue
 import threading
@@ -16,6 +17,8 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from pipeline_runner import execute_pipeline
+
+log = logging.getLogger("hindsight.server")
 
 
 from fastapi.middleware.cors import CORSMiddleware
@@ -60,6 +63,7 @@ def _worker(session_id: str, payload: Dict[str, Any], event_queue: queue.Queue) 
         result_state = execute_pipeline(payload, emit=emit)
         results[session_id] = result_state
     except Exception as exc:
+        log.error("[%s] Pipeline worker crashed: %s", session_id, exc, exc_info=True)
         event_queue.put(("error", {"session_id": session_id, "message": str(exc)}))
         results[session_id] = {"error": str(exc)}
     finally:
@@ -118,7 +122,10 @@ async def github_webhook(request: Request) -> Dict[str, Any]:
         "status": "received",
     }
 
+    log.info("[WEBHOOK] delivery=%s | event=%s | repo=%s", delivery_id[:8], event_type, repo_full_name or "unknown")
+
     if event_type == "ping":
+        log.info("[WEBHOOK] ping received — responding pong")
         webhook_record["status"] = "pong"
         webhook_events.appendleft(webhook_record)
         return {"message": "pong", "delivery_id": delivery_id}
@@ -173,6 +180,9 @@ async def github_webhook(request: Request) -> Dict[str, Any]:
         )
         thread.start()
 
+        log.info("[WEBHOOK] Pipeline triggered | session=%s | repo=%s | branch=%s | author=%s | commit=%s",
+                 session_id, repo_full_name, branch, author, (head_commit_msg or "")[:60])
+
         webhook_record["session_id"] = session_id
         webhook_record["status"] = "pipeline_triggered"
         webhook_record["branch"] = branch
@@ -186,6 +196,7 @@ async def github_webhook(request: Request) -> Dict[str, Any]:
         }
 
     # Unsupported event type — log it and return 200
+    log.info("[WEBHOOK] Ignoring unsupported event type: %s", event_type)
     webhook_record["status"] = "ignored"
     webhook_events.appendleft(webhook_record)
     return {"message": f"event '{event_type}' acknowledged but not processed"}
@@ -207,6 +218,9 @@ def start_pipeline(request: PipelineStartRequest) -> Dict[str, Any]:
     metadata = _default_metadata(request.metadata)
     if request.github_repo:
         metadata["github_repo"] = request.github_repo
+
+    log.info("[%s] Pipeline START | repo=%s | author=%s | trigger=manual",
+             session_id, request.github_repo or "(diff)", metadata.get("author", "?"))
 
     payload = {
         "git_diff": request.git_diff or "",
@@ -261,3 +275,11 @@ def pipeline_result(session_id: str) -> Dict[str, Any]:
     if session_id not in results:
         raise HTTPException(status_code=404, detail="Result not ready or session not found")
     return results[session_id].get("frontend_payload", results[session_id])
+
+
+from fastapi.staticfiles import StaticFiles
+
+# Serve frontend build static files if directory exists
+dist_path = os.path.join(os.path.dirname(__file__), "dist")
+if os.path.exists(dist_path):
+    app.mount("/", StaticFiles(directory=dist_path, html=True), name="frontend")

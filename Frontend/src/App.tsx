@@ -13,7 +13,8 @@ import DashboardView from './components/DashboardView';
 import SecurityView from './components/SecurityView';
 import LogsView from './components/LogsView';
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:8000';
+const backendUrl = import.meta.env.VITE_BACKEND_URL ?? 
+  (window.location.port === '5173' ? 'http://localhost:8000' : window.location.origin);
 
 const initialState: PipelineRunState = {
   sessionId: '',
@@ -27,7 +28,7 @@ const initialState: PipelineRunState = {
 
 export default function App() {
   const [gitDiff, setGitDiff] = useState(RISKY_POOL_DIFF);
-  const [githubRepo, setGithubRepo] = useState('MasirJafri1/hack-baroda');
+  const [githubRepo, setGithubRepo] = useState('11-anos/demo-vulnerable-microservice');
   const [inputType, setInputType] = useState<'diff' | 'github'>('github');
   const [author, setAuthor] = useState('demo_user');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'security' | 'logs'>('dashboard');
@@ -213,7 +214,7 @@ export default function App() {
           )}
 
           {activeTab === 'security' && (
-            <SecurityView state={state} onRunDeepScan={() => {}} />
+            <SecurityView state={state} onRunDeepScan={() => { }} />
           )}
 
           {activeTab === 'logs' && (
@@ -228,7 +229,6 @@ export default function App() {
         </main>
       </div>
 
-      <Footer onSimulatePush={handleSimulatePush} onClearSession={handleClearSession} />
     </div>
   );
 }

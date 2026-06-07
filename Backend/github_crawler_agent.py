@@ -221,19 +221,66 @@ def supervisor_node(state: AgentState) -> AgentState:
     # Try the LLM path first; fall back deterministically if Groq rejects the request.
     try:
         response = model_with_tools.invoke(messages)
-    except Exception:
-        prompt_text = " ".join(msg.content for msg in state["messages"] if hasattr(msg, "content") and isinstance(msg.content, str))
-        lower = prompt_text.lower()
+    except Exception as e:
+        # Check which tools have already run by parsing ToolMessages in the history
+        has_commits_run = False
+        has_diff_run = False
+        has_issues_run = False
+        print(f"DEBUG supervisor_node fallback: messages in state count = {len(state['messages'])}")
+        for idx, msg in enumerate(state["messages"]):
+            print(f"  DEBUG msg[{idx}]: type={type(msg).__name__}")
+            if isinstance(msg, ToolMessage):
+                print(f"    DEBUG ToolMessage content: {msg.content[:100]}...")
+                try:
+                    content_data = json.loads(msg.content)
+                    if isinstance(content_data, dict):
+                        if "commits" in content_data:
+                            has_commits_run = True
+                        if "diff" in content_data:
+                            has_diff_run = True
+                        if "issues" in content_data:
+                            has_issues_run = True
+                except Exception as parse_err:
+                    print(f"    DEBUG parse error: {parse_err}")
 
+        print(f"DEBUG supervisor_node fallback status: has_commits_run={has_commits_run}, has_diff_run={has_diff_run}, has_issues_run={has_issues_run}")
         tool_calls = []
-        if "commit" in lower:
-            tool_calls.append({"name": "fetch_commits", "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "max_count": 3}, "id": "fallback-commit"})
-        if "diff" in lower:
-            tool_calls.append({"name": "fetch_commit_diff", "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "commit_sha": "HEAD"}, "id": "fallback-diff"})
-        if "issue" in lower:
-            tool_calls.append({"name": "fetch_issues", "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "state": "open"}, "id": "fallback-issue"})
+        if not has_commits_run:
+            tool_calls.append({
+                "name": "fetch_commits",
+                "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "max_count": 3},
+                "id": "fallback-commit"
+            })
+        
+        if not has_issues_run:
+            tool_calls.append({
+                "name": "fetch_issues",
+                "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "state": "open"},
+                "id": "fallback-issue"
+            })
 
-        response = AIMessage(content="Fallback tool routing used because the Groq model quota is exhausted.", tool_calls=tool_calls)
+        # Fetch diff if we haven't yet, but only if commits have already been fetched
+        if has_commits_run and not has_diff_run:
+            commit_sha = "HEAD"
+            extracted = state.get("extracted_data", {})
+            if extracted.get("commits") and isinstance(extracted["commits"], list):
+                commit_sha = extracted["commits"][0].get("sha", "HEAD")
+            tool_calls.append({
+                "name": "fetch_commit_diff",
+                "args": {"owner": state["repo_owner"], "repo": state["repo_name"], "commit_sha": commit_sha},
+                "id": "fallback-diff"
+            })
+
+        print(f"DEBUG supervisor_node fallback: generated tool_calls = {[tc['name'] for tc in tool_calls]}")
+        if tool_calls:
+            response = AIMessage(
+                content="Fallback tool routing used because the Groq model quota is exhausted.",
+                tool_calls=tool_calls
+            )
+        else:
+            response = AIMessage(
+                content="Fallback completed: Repository metadata and commit diff retrieved successfully."
+            )
     
     # Append the AI response to messages
     state["messages"].append(response)
@@ -267,10 +314,22 @@ def tool_execution_node(state: AgentState) -> AgentState:
         tool_input.setdefault("owner", state["repo_owner"])
         tool_input.setdefault("repo", state["repo_name"])
 
-        if tool_name == "fetch_commit_diff" and "commit_sha" not in tool_input:
-            latest_commit = state["extracted_data"].get("commits", [{}])[0]
-            if isinstance(latest_commit, dict) and latest_commit.get("sha"):
-                tool_input["commit_sha"] = latest_commit["sha"]
+        if tool_name == "fetch_commit_diff":
+            commit_sha = tool_input.get("commit_sha", "")
+            is_placeholder = False
+            if not commit_sha:
+                is_placeholder = True
+            else:
+                commit_sha_clean = commit_sha.strip().lower()
+                if commit_sha_clean in ("head", "latest_commit_sha", "commit_sha", "latest", "newest"):
+                    is_placeholder = True
+                elif not all(c in "0123456789abcdef" for c in commit_sha_clean):
+                    is_placeholder = True
+            
+            if is_placeholder:
+                latest_commit = state["extracted_data"].get("commits", [{}])[0]
+                if isinstance(latest_commit, dict) and latest_commit.get("sha"):
+                    tool_input["commit_sha"] = latest_commit["sha"]
         
         # Execute the corresponding tool
         if tool_name == "fetch_commits":

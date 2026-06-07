@@ -9,31 +9,28 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
       <div className="flex items-center gap-md">
         <div className="flex items-center gap-sm">
           <span className="material-symbols-outlined text-secondary" style={{ fontVariationSettings: "'FILL' 1" }}>security</span>
-          <span className="font-headline-md text-headline-md font-bold text-primary">DevOps Guardrail AI</span>
+          <span className="font-headline-md text-headline-md font-bold text-primary">DevOps Deki-Guardrail</span>
         </div>
         <span className="hidden md:block h-6 w-px bg-outline-variant"></span>
         <nav className="hidden md:flex gap-md">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`font-semibold px-sm py-xs border-b-2 transition-all ${
-              activeTab === 'dashboard' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
-            }`}
+            className={`font-semibold px-sm py-xs border-b-2 transition-all ${activeTab === 'dashboard' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
+              }`}
           >
             Dashboard
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`font-semibold px-sm py-xs border-b-2 transition-all ${
-              activeTab === 'security' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
-            }`}
+            className={`font-semibold px-sm py-xs border-b-2 transition-all ${activeTab === 'security' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
+              }`}
           >
             Security
           </button>
           <button
             onClick={() => setActiveTab('logs')}
-            className={`font-semibold px-sm py-xs border-b-2 transition-all ${
-              activeTab === 'logs' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
-            }`}
+            className={`font-semibold px-sm py-xs border-b-2 transition-all ${activeTab === 'logs' ? 'border-secondary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-on-surface'
+              }`}
           >
             Audit Logs
           </button>
