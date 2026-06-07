@@ -1,0 +1,62 @@
+[
+  {
+    "id": "INC-001",
+    "title": "Unrestricted Administrative Access in Security Groups",
+    "description": "A developer configured an AWS Security Group or Terraform security resource allowing direct ingress traffic from anywhere (0.0.0.0/0) on management ports (like SSH port 22 or RDP port 3389). This resulted in brute-force scanning and automated compromise attempts on production instances.",
+    "symptoms": [
+      "Inbound traffic allowed from 0.0.0.0/0 on port 22",
+      "SSH scanning logs showing thousands of unauthorized login attempts",
+      "Terraform resource aws_security_group_rule or aws_security_group containing cidr_blocks = [\"0.0.0.0/0\"] and port 22"
+    ],
+    "mitigation": "Restrict CIDR blocks to internal VPC ranges or specific office IPs. Use AWS Systems Manager Session Manager or bastion hosts instead of exposing port 22 directly.",
+    "keywords": ["0.0.0.0/0", "port 22", "ssh", "security group", "ingress", "aws_security_group"]
+  },
+  {
+    "id": "INC-002",
+    "title": "WebSocket Connection / File Descriptor Leak",
+    "description": "Application handlers establishing WebSocket connections or external client threads did not implement clean close or timeout routines. When high traffic hit the servers, the file descriptor limit was reached, causing the service to crash with 'Too many open files' and drop all connections.",
+    "symptoms": [
+      "java.io.IOException: Too many open files",
+      "socket leaks, connections stuck in CLOSE_WAIT status",
+      "WebSocket handlers not closing session inside 'finally' block or on connection error"
+    ],
+    "mitigation": "Ensure every connection/session is closed in a try-finally block. Set an explicit socket read/write timeout and enforce a connection pool maximum limit.",
+    "keywords": ["websocket", "connection pool", "socket", "close", "timeout", "CLOSE_WAIT", "too many open files"]
+  },
+  {
+    "id": "INC-003",
+    "title": "Secrets Exposure in Version Control",
+    "description": "A commit included configuration files or hardcoded credentials (API keys, AWS secrets, DATABASE_URL) directly in git-tracked code instead of reading from environment variables. This compromised database credentials and required rotated keys.",
+    "symptoms": [
+      "Hardcoded variables named AWS_SECRET_ACCESS_KEY, DATABASE_URL, or API_KEY",
+      "Exposing private keys (-----BEGIN PRIVATE KEY-----) in codebase",
+      "Committing file names like config.json or .env containing production secrets"
+    ],
+    "mitigation": "Remove secrets from git history immediately using git-filter-repo or BFG Repo-Cleaner. Load credentials from environment variables or a secret manager (HashiCorp Vault, AWS Secrets Manager). Add sensitive files to .gitignore.",
+    "keywords": ["secret", "key", "password", "aws_secret", "database_url", "token", "private_key", ".env"]
+  },
+  {
+    "id": "INC-004",
+    "title": "SQL Injection Vulnerability via String Formatting",
+    "description": "Database query builder constructed queries by directly interpolating user input parameters via string formatting (e.g., using python's f-string or % formatting) instead of executing parameterized queries. This allowed attackers to perform unauthorized database operations.",
+    "symptoms": [
+      "Raw SQL execution with string formatting like f\"SELECT * FROM users WHERE username = '{username}'\"",
+      "Lack of bind parameters / query placeholder syntax",
+      "Database errors indicating syntax problems near input data fields"
+    ],
+    "mitigation": "Always use parameterized queries (using placeholders like %s, ?, or :name) provided by the DB driver. Never format strings directly into SQL statements.",
+    "keywords": ["sql injection", "parameterized", "execute", "cursor.execute", "f-string", "select", "format"]
+  },
+  {
+    "id": "INC-005",
+    "title": "Docker Container Running as Root with Insecure Base",
+    "description": "Dockerfiles used generic base images (e.g. node:latest or ubuntu:latest) without pinning specific digests, and did not declare a non-root 'USER'. This led to high-severity container escape vulnerabilities because processes ran with root permissions inside the host namespace.",
+    "symptoms": [
+      "Dockerfile missing 'USER' instruction",
+      "Using tag 'latest' for base images",
+      "Container scanning reporting critical vulnerabilities in the OS distribution layer"
+    ],
+    "mitigation": "Pin base images to specific minor versions or SHAs (e.g., node:18-alpine). Create a dedicated non-root user in the Dockerfile and switch to it using 'USER username'.",
+    "keywords": ["dockerfile", "from node", "from ubuntu", "user root", "base image", "latest"]
+  }
+]
