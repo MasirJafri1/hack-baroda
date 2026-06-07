@@ -1,3 +1,4 @@
+import React, { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { PipelineRunState } from '../types';
 import { stageLabels, stages } from '../constants';
@@ -78,6 +79,28 @@ export default function DashboardView({
   const isBlocked = verdict === 'BLOCKED';
   const isApproved = verdict === 'APPROVED';
   const isReview = verdict === 'REQUIRES_REVIEW';
+  const verdictScrollRef = useRef<HTMLDivElement | null>(null);
+  const [verdictScrollProgress, setVerdictScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const node = verdictScrollRef.current;
+    if (!node) return;
+
+    const updateScrollProgress = () => {
+      const maxScrollTop = node.scrollHeight - node.clientHeight;
+      const progress = maxScrollTop > 0 ? (node.scrollTop / maxScrollTop) * 100 : 0;
+      setVerdictScrollProgress(Math.min(100, Math.max(0, progress)));
+    };
+
+    updateScrollProgress();
+    node.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', updateScrollProgress);
+
+    return () => {
+      node.removeEventListener('scroll', updateScrollProgress);
+      window.removeEventListener('resize', updateScrollProgress);
+    };
+  }, [state.finalPayload]);
 
   return (
     <div className="h-full grid grid-cols-1 lg:grid-cols-12 gap-0">
@@ -360,17 +383,27 @@ export default function DashboardView({
 
       {/* Panel 3: Executive Verdict */}
       <section className="lg:col-span-4 flex flex-col bg-surface-container-lowest overflow-hidden">
-        <div className={`p-md border-b border-outline-variant flex justify-between items-center ${isBlocked ? 'bg-error-container text-on-error-container' : isApproved ? 'bg-green-100 text-green-800' : isReview ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-container-low'
+        <div className={`p-md border-b border-outline-variant ${isBlocked ? 'bg-error-container text-on-error-container' : isApproved ? 'bg-green-100 text-green-800' : isReview ? 'bg-yellow-100 text-yellow-800' : 'bg-surface-container-low'
           }`}>
-          <div className="flex items-center gap-sm">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
-              {isBlocked ? 'block' : isApproved ? 'check_circle' : 'security'}
-            </span>
-            <h2 className="font-headline-sm text-headline-sm font-bold">Executive Verdict</h2>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-sm">
+              <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {isBlocked ? 'block' : isApproved ? 'check_circle' : 'security'}
+              </span>
+              <h2 className="font-headline-sm text-headline-sm font-bold">Executive Verdict</h2>
+            </div>
+          </div>
+          <div className="mt-2 w-full">
+            <div className="h-1.5 w-full rounded-full bg-blue-100 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-blue-500 transition-all duration-150"
+                style={{ width: `${verdictScrollProgress}%` }}
+              />
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-scroll p-md space-y-md custom-scrollbar">
+        <div ref={verdictScrollRef} className="flex-1 overflow-y-scroll p-md space-y-md custom-scrollbar">
           {!state.finalPayload ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-md">
               <div className="w-16 h-16 rounded-full bg-surface-container-low flex items-center justify-center mb-md text-on-surface-variant">
