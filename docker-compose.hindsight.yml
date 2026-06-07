@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  hindsight:
+    image: hindsightai/hindsight:latest
+    container_name: hindsight_local
+    ports:
+      - "8080:8080"
+    environment:
+      - HINDSIGHT_ENV=dev
+    volumes:
+      - hindsight_data:/data
+
+volumes:
+  hindsight_data:
+    driver: local
