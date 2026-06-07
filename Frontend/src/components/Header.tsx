@@ -7,7 +7,7 @@ export default function Header() {
           <span className="font-bold text-lg tracking-tight text-primary">DevOps Deki-Guardrail</span>
         </div>
         <span className="hidden md:block h-5 w-px bg-outline-variant/60"></span>
-        <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-semibold bg-secondary/10 text-secondary border border-secondary/10">
+        <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-semibold bg-primary/5 text-primary border border-primary/10">
           Agent Mode
         </span>
       </div>
@@ -25,7 +25,7 @@ export default function Header() {
         <div className="h-8 w-px bg-outline-variant/60"></div>
         
         <div className="flex items-center gap-2.5 pl-1">
-          <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-secondary/10">
+          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold shadow-sm shadow-primary/10">
             MJ
           </div>
           <div className="hidden sm:flex flex-col">

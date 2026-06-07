@@ -23,7 +23,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           onClick={() => setActiveTab('dashboard')}
           className={`mx-3 px-4 py-2.5 rounded-lg flex items-center gap-3 transition-all duration-200 text-left outline-none ${
             activeTab === 'dashboard'
-              ? 'bg-secondary text-white font-semibold shadow-sm shadow-secondary/20'
+              ? 'bg-primary text-white font-semibold shadow-sm shadow-primary/10'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
           }`}
         >
@@ -35,7 +35,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           onClick={() => setActiveTab('security')}
           className={`mx-3 px-4 py-2.5 rounded-lg flex items-center gap-3 transition-all duration-200 text-left outline-none ${
             activeTab === 'security'
-              ? 'bg-secondary text-white font-semibold shadow-sm shadow-secondary/20'
+              ? 'bg-primary text-white font-semibold shadow-sm shadow-primary/10'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
           }`}
         >
@@ -47,7 +47,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           onClick={() => setActiveTab('logs')}
           className={`mx-3 px-4 py-2.5 rounded-lg flex items-center gap-3 transition-all duration-200 text-left outline-none ${
             activeTab === 'logs'
-              ? 'bg-secondary text-white font-semibold shadow-sm shadow-secondary/20'
+              ? 'bg-primary text-white font-semibold shadow-sm shadow-primary/10'
               : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
           }`}
         >

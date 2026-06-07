@@ -91,7 +91,7 @@ export default function LogsView({
               onClick={() => setActivePanel('sse')}
               className={`text-xs px-3 py-1 rounded font-semibold transition-all ${
                 activePanel === 'sse'
-                  ? 'bg-secondary text-white shadow'
+                  ? 'bg-primary text-white shadow'
                   : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >
@@ -101,7 +101,7 @@ export default function LogsView({
               onClick={() => setActivePanel('webhooks')}
               className={`text-xs px-3 py-1 rounded font-semibold transition-all flex items-center gap-1 ${
                 activePanel === 'webhooks'
-                  ? 'bg-secondary text-white shadow'
+                  ? 'bg-primary text-white shadow'
                   : 'text-on-surface-variant hover:text-on-surface'
               }`}
             >

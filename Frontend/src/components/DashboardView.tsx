@@ -125,7 +125,7 @@ export default function DashboardView({
               <button
                 type="button"
                 onClick={() => setInputType('github')}
-                className={`text-xs py-1.5 rounded transition-all ${inputType === 'github' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
+                className={`text-xs py-1.5 rounded transition-all ${inputType === 'github' ? 'bg-primary text-white font-bold' : 'bg-surface-container-high text-on-surface'
                   }`}
               >
                 GitHub Crawler
@@ -133,7 +133,7 @@ export default function DashboardView({
               <button
                 type="button"
                 onClick={() => setInputType('diff')}
-                className={`text-xs py-1.5 rounded transition-all ${inputType === 'diff' ? 'bg-secondary text-white font-bold' : 'bg-surface-container-high text-on-surface'
+                className={`text-xs py-1.5 rounded transition-all ${inputType === 'diff' ? 'bg-primary text-white font-bold' : 'bg-surface-container-high text-on-surface'
                   }`}
               >
                 Manual Git Diff
@@ -394,9 +394,9 @@ export default function DashboardView({
             </div>
           </div>
           <div className="mt-2 w-full">
-            <div className="h-1.5 w-full rounded-full bg-blue-100 overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-zinc-100 overflow-hidden">
               <div
-                className="h-full rounded-full bg-blue-500 transition-all duration-150"
+                className="h-full rounded-full bg-zinc-400 transition-all duration-150"
                 style={{ width: `${verdictScrollProgress}%` }}
               />
             </div>
