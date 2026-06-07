@@ -146,6 +146,24 @@ Enter scenario number [1-4]:
 
 Choose a scenario to run. The script will invoke the LangGraph pipeline, log node transitions in the console, and render the final synthesized markdown DevOps audit report.
 
+## SSE Server for Frontend
+
+Run the backend as a streaming server that exposes a start endpoint plus SSE events for the frontend:
+
+```bash
+uvicorn server:app --reload --host 0.0.0.0 --port 8000
+```
+
+Start a run:
+
+```bash
+curl -X POST http://localhost:8000/api/pipeline/start \
+      -H 'Content-Type: application/json' \
+      -d '{"git_diff":"diff --git a/example.py b/example.py\n--- a/example.py\n+++ b/example.py\n@@ -1 +1 @@\n-print(1)\n+print(2)","metadata":{"author":"demo"}}'
+```
+
+Then connect the frontend to the returned `events_url` with an SSE client. The server emits `run_started`, `stage_started`, `stage_completed`, `final_payload`, `error`, and `done` events.
+
 ### One-shot setup and test
 
 To install requirements and immediately run the backend test harness, use:

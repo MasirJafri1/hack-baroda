@@ -126,3 +126,23 @@ python scripts/ingest_synthetic.py --mode bulk --hindsight-url http://localhost:
   - `Backend/agents/utils.get_db()` will return an HTTP-backed `HindsightHTTPClient` when `HINDSIGHT_URL` is present; otherwise it falls back to the local `HindsightDB`.
 
 ---
+
+**Frontend SSE Server**
+
+- Added `Backend/server.py` as a FastAPI app that starts the pipeline and streams structured SSE events to the frontend.
+- Main endpoints:
+  - `POST /api/pipeline/start` starts a run and returns `session_id`, `events_url`, and `result_url`.
+  - `GET /api/pipeline/{session_id}/events` streams pipeline events as Server-Sent Events.
+  - `GET /api/pipeline/{session_id}/result` returns the final frontend-ready JSON payload once it is ready.
+
+- Event types:
+  - `run_started`
+  - `stage_started`
+  - `stage_completed`
+  - `final_payload`
+  - `error`
+  - `done`
+
+- The final payload follows the strict JSON schema requested by the frontend and is constructed in `Backend/frontend_payload.py`.
+
+---

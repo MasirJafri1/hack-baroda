@@ -24,7 +24,8 @@ def reviewer_v1(state: SharedGraphState) -> Dict[str, Any]:
         print("Reviewer V1: No matching historical incident patterns found in DB. Clearing pipeline.")
         return {
             "risk_flag": False,
-            "risk_reason": "No matching historical failure patterns detected in Hindsight database."
+            "risk_reason": "No matching historical failure patterns detected in Hindsight database.",
+            "matches_found": 0
         }
     
     print(f"Reviewer V1: Found {len(matched_incidents)} matching historical incident(s). Running LLM verification...")
@@ -86,5 +87,6 @@ def reviewer_v1(state: SharedGraphState) -> Dict[str, Any]:
     
     return {
         "risk_flag": risk_flag,
-        "risk_reason": risk_reason
+        "risk_reason": risk_reason,
+        "matches_found": len(matched_incidents)
     }
